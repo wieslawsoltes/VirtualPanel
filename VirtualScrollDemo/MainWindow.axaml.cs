@@ -17,14 +17,16 @@ namespace VirtualScrollDemo
 #if DEBUG
             this.AttachDevTools();
 #endif
+            Renderer.DrawFps = true;
+
             Items = new ObservableCollection<string>();
 
-            for (var i = 0; i < 1_000; i++)
+            for (var i = 0; i < 1_000_000; i++)
             {
                 Items.Add($"Item {i}");
             }
 
-            ItemHeight = 30;
+            ItemHeight = 25;
             
             DataContext = this;
         }
