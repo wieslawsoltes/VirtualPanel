@@ -21,7 +21,7 @@ namespace VirtualScrollDemo
 
             Items = new ObservableCollection<string>();
 
-            for (var i = 0; i < 1_000_000; i++)
+            for (var i = 0; i < 1_00; i++)
             {
                 Items.Add($"Item {i}");
             }
