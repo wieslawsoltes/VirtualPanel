@@ -8,11 +8,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Metadata;
 
 namespace VirtualScrollDemo.Controls
 {
-    public class VirtualPanel : Panel, ILogicalScrollable
+    public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     {
         public static readonly StyledProperty<IList?> ItemsProperty = 
             AvaloniaProperty.Register<VirtualPanel, IList?>(nameof(Items));
