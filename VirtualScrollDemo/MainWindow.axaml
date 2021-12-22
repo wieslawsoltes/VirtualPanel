@@ -11,7 +11,7 @@
 
   <DockPanel>
 
-    <DockPanel DockPanel.Dock="Top" Background="WhiteSmoke" x:CompileBindings="False">
+    <DockPanel DockPanel.Dock="Top" Background="Gray" x:CompileBindings="False">
       <TextBlock Text="{Binding #ScrollViewer.Extent, StringFormat={} Extent: {0}}" DockPanel.Dock="Top" />
       <TextBlock Text="{Binding #ScrollViewer.Viewport, StringFormat={} Viewport: {0}}" DockPanel.Dock="Top" />
       <TextBlock Text="{Binding #ScrollViewer.Offset, StringFormat={} Offset: {0}}" DockPanel.Dock="Top" />
