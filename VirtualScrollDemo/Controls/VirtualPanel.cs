@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -46,7 +47,7 @@ namespace VirtualScrollDemo.Controls
 
         private int _startIndex = -1;
         private int _endIndex = -1;
-        private List<IControl> _controls;
+        private List<IControl> _controls = new List<IControl>();
 
         private Size CalculateSize(Size size)
         {
@@ -60,10 +61,15 @@ namespace VirtualScrollDemo.Controls
 
             _extent = size;
 
+            
+            _scrollSize = new Size(16, 16);
+            _pageScrollSize = new Size(_viewport.Width, _viewport.Height);
+            
+            
             return size;
         }
 
-        private void Materialize(Size viewport, Size extent, Vector offset)
+        private void Materialize(Size viewport, Size extent, Vector offset, out double topOffset, [CallerMemberName] string name = default)
         {
             var itemCount = Items.Count;
             var itemHeight = ItemHeight;
@@ -72,7 +78,7 @@ namespace VirtualScrollDemo.Controls
             var visibleCount = (int)(viewport.Height / itemHeight);
             var endIndex = startIndex + visibleCount - 1;
 
-            var topOffset = offset.Y % itemHeight;
+            topOffset = offset.Y % itemHeight;
 
             Debug.WriteLine($"viewport: {viewport}" +
                             $", extent: {extent}" +
@@ -80,7 +86,39 @@ namespace VirtualScrollDemo.Controls
                             $", startIndex: {startIndex}" +
                             $", endIndex: {endIndex}" +
                             $", visibleCount: {visibleCount}" +
-                            $", topOffset: {-topOffset}");
+                            $", topOffset: {-topOffset}" +
+                            $", name: {name}");
+
+            if (_controls.Count == 0)
+            {
+                var index = startIndex;
+                for (var i = 0; i < visibleCount; i++)
+                {
+                    var param = Items[index];
+                    var control = ItemTemplate.Build(param);
+                    control.DataContext = param;
+                    _controls.Add(control);
+                    index++;
+                }
+
+                foreach (var control in _controls)
+                {
+                    Children.Add(control);
+                }
+            }
+            else
+            {
+                var index = startIndex;
+                for (var i = 0; i < visibleCount; i++)
+                {
+                    var param = Items[index];
+                    var control = _controls[i];
+                    control.DataContext = param;
+                    index++;
+                }  
+            }
+
+
         }
         
         
@@ -106,9 +144,10 @@ namespace VirtualScrollDemo.Controls
                 _offset = value;
 
                 CalculateSize(Bounds.Size);
-                Materialize(_viewport, _extent, _offset);
+                Materialize(_viewport, _extent, _offset, out _);
 
                 InvalidateScrollable();
+                InvalidateMeasure();
             }
         }
 
@@ -157,20 +196,44 @@ namespace VirtualScrollDemo.Controls
         {
             availableSize = CalculateSize(availableSize);
             
-            Materialize(_viewport, _extent, _offset);
+            Materialize(_viewport, _extent, _offset, out _);
 
-            return base.MeasureOverride(availableSize);
+            if (_controls.Count > 0)
+            {
+                foreach (var control in _controls)
+                {
+                    var size = new Size(_viewport.Width, ItemHeight);
+                    control.Measure(size);
+                    Debug.WriteLine($"Measure: {size}");
+                }
+            }
+
+            //return base.MeasureOverride(availableSize);
+            return availableSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
             finalSize = CalculateSize(finalSize);
 
-            Materialize(_viewport, _extent, _offset);
+            Materialize(_viewport, _extent, _offset, out var topOffset);
 
             InvalidateScrollable();
 
-            return base.ArrangeOverride(finalSize);
+            if (_controls.Count > 0)
+            {
+                var y = topOffset == 0.0 ? 0.0 : -topOffset;
+                foreach (var control in _controls)
+                {
+                    var rect = new Rect(new Point(0, y), new Size(_viewport.Width, ItemHeight));
+                    control.Arrange(rect);
+                    y += ItemHeight;
+                    Debug.WriteLine($"Arrange: {rect}");
+                }
+            }
+
+            //return base.ArrangeOverride(finalSize);
+            return finalSize;
         }
 
         private void InvalidateScrollable()
