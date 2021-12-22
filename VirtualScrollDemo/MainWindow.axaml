@@ -24,7 +24,14 @@
                       ItemHeight="{Binding ItemHeight}">
         <c:VirtualPanel.ItemTemplate>
           <DataTemplate x:DataType="x:String">
-            <TextBlock Text="{Binding}" />
+            <Panel>
+              <Panel.Styles>
+                <Style Selector="Panel:nth-child(2n)">
+                  <Setter Property="Background"  Value="#fff8f8f8"/>
+                </Style>
+              </Panel.Styles>
+              <TextBlock Text="{Binding}" Margin="12,0,12,0" VerticalAlignment="Center" />
+            </Panel>
           </DataTemplate>
         </c:VirtualPanel.ItemTemplate>
       </c:VirtualPanel>
