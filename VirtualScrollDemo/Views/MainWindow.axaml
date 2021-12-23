@@ -4,9 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:c="clr-namespace:VirtualScrollDemo.Controls"
         xmlns:views="clr-namespace:VirtualScrollDemo.Views"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="635"
         x:Class="VirtualScrollDemo.Views.MainWindow"
         Title="VirtualScrollDemo"
+        WindowState="Normal" WindowStartupLocation="CenterScreen"
+        Width="800" Height="635"
         x:DataType="views:MainWindow" x:CompileBindings="True">
 
   <DockPanel>
@@ -26,8 +28,14 @@
           <DataTemplate x:DataType="x:String">
             <Panel>
               <Panel.Styles>
+                <Style Selector="Panel">
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
                 <Style Selector="Panel:nth-child(2n)">
-                  <Setter Property="Background"  Value="#fff8f8f8"/>
+                  <Setter Property="Background" Value="#fff8f8f8"/>
+                </Style>
+                <Style Selector="Panel:pointerover">
+                  <Setter Property="Background" Value="#ffe4e4e4"/>
                 </Style>
               </Panel.Styles>
               <TextBlock Text="{Binding}" Margin="6,0,6,0" VerticalAlignment="Center" />
