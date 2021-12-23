@@ -21,14 +21,14 @@ public partial class MainWindow : Window
 
         Items = new ObservableCollection<string>();
 
-        var itemsCount = 100;
+        var itemsCount = 50;
 
         for (var i = 0; i < itemsCount; i++)
         {
             Items.Add($"Item {i}");
         }
 
-        ItemHeight = 25;
+        ItemHeight = 50;
             
         DataContext = this;
     }
