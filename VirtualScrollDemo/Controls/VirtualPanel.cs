@@ -173,17 +173,15 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
         var itemCount = Items.Count;
         var itemHeight = ItemHeight;
-        var height = itemCount * itemHeight;
+        var height = (itemCount + 1) * itemHeight;
 
         size = size.WithHeight(height);
 
         _extent = size;
 
-            
         _scrollSize = new Size(16, 16);
         _pageScrollSize = new Size(_viewport.Width, _viewport.Height);
-            
-            
+
         return size;
     }
 
@@ -194,9 +192,21 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
         var startIndex = (int)(offset.Y / itemHeight);
         var visibleCount = (int)(viewport.Height / itemHeight);
-        var endIndex = startIndex + visibleCount - 1;
+
+        if (/* topOffset > 0 && */ visibleCount < itemCount)
+        {
+            visibleCount += 1;
+        }
+
+        if (_controls.Count > 0)
+        {
+            visibleCount = _controls.Count;
+        }
+
+        var endIndex = startIndex + visibleCount - 2;
 
         topOffset = offset.Y % itemHeight;
+
 /*
             Debug.WriteLine($"viewport: {viewport}" +
                             $", extent: {extent}" +
@@ -206,7 +216,8 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                             $", visibleCount: {visibleCount}" +
                             $", topOffset: {-topOffset}" +
                             $", name: {name}");
-*/
+//*/
+
         if (_controls.Count == 0)
         {
             var index = startIndex;
@@ -230,8 +241,21 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             var index = startIndex;
             for (var i = 0; i < visibleCount; i++)
             {
-                var param = Items[index];
                 var control = _controls[i];
+                if (index >= Items.Count)
+                {
+                    control.IsVisible = false;
+                    continue;
+                }
+                else
+                {
+                    if (!control.IsVisible)
+                    {
+                        control.IsVisible = true;
+                    }
+                }
+
+                var param = Items[index];
                 control.DataContext = param;
                 _indexes[i] = index;
                 index++;
