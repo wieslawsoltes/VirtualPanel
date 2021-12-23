@@ -173,7 +173,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
         var itemCount = Items.Count;
         var itemHeight = ItemHeight;
-        var height = (itemCount + 1) * itemHeight;
+        var height = itemCount * itemHeight;
 
         size = size.WithHeight(height);
 
