@@ -9,4 +9,10 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.10.11" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.11" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
