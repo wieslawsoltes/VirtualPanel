@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Metadata;
@@ -35,10 +36,8 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         set
         {
             _offset = value;
-
             CalculateSize(Bounds.Size);
             Materialize(_viewport, _extent, _offset, out _);
-
             InvalidateScrollable();
             InvalidateMeasure();
         }
@@ -51,7 +50,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         return false;
     }
 
-    IControl ILogicalScrollable.GetControlInDirection(NavigationDirection direction, IControl @from)
+    IControl? ILogicalScrollable.GetControlInDirection(NavigationDirection direction, IControl @from)
     {
         return null;
     }
@@ -99,7 +98,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     #region IChildIndexProvider
 
-    private EventHandler<ChildIndexChangedEventArgs> _childIndexChanged;
+    private EventHandler<ChildIndexChangedEventArgs>? _childIndexChanged;
 
     int IChildIndexProvider.GetChildIndex(ILogical child)
     {
@@ -116,11 +115,17 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     bool IChildIndexProvider.TryGetTotalCount(out int count)
     {
-        count = Items.Count;
-        return true;
+        if (Items is { })
+        {
+            count = Items.Count;
+            return true;
+        }
+
+        count = -1;
+        return false;
     }
 
-    event EventHandler<ChildIndexChangedEventArgs> IChildIndexProvider.ChildIndexChanged
+    event EventHandler<ChildIndexChangedEventArgs>? IChildIndexProvider.ChildIndexChanged
     {
         add => _childIndexChanged += value;
         remove => _childIndexChanged -= value;
@@ -171,7 +176,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     {
         _viewport = size;
 
-        var itemCount = Items.Count;
+        var itemCount = Items?.Count ?? 0;
         var itemHeight = ItemHeight;
         var height = itemCount * itemHeight;
 
@@ -187,7 +192,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     private void Materialize(Size viewport, Size extent, Vector offset, out double topOffset, [CallerMemberName] string name = default)
     {
-        var itemCount = Items.Count;
+        var itemCount = Items?.Count ?? 0;
         var itemHeight = ItemHeight;
 
         var startIndex = (int)(offset.Y / itemHeight);
@@ -207,59 +212,65 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
         topOffset = offset.Y % itemHeight;
 
-/*
-            Debug.WriteLine($"viewport: {viewport}" +
-                            $", extent: {extent}" +
-                            $", offset: {offset}" +
-                            $", startIndex: {startIndex}" +
-                            $", endIndex: {endIndex}" +
-                            $", visibleCount: {visibleCount}" +
-                            $", topOffset: {-topOffset}" +
-                            $", name: {name}");
-//*/
+        /*
+        Debug.WriteLine($"viewport: {viewport}" +
+                        $", extent: {extent}" +
+                        $", offset: {offset}" +
+                        $", startIndex: {startIndex}" +
+                        $", endIndex: {endIndex}" +
+                        $", visibleCount: {visibleCount}" +
+                        $", topOffset: {-topOffset}" +
+                        $", name: {name}");
+        //*/
 
-        if (_controls.Count == 0)
+        if (Items is null || Items.Count == 0)
         {
-            var index = startIndex;
-            for (var i = 0; i < visibleCount; i++)
-            {
-                var param = Items[index];
-                var control = ItemTemplate.Build(param);
-                control.DataContext = param;
-                _controls.Add(control);
-                _indexes.Add(index);
-                index++;
-            }
-
-            foreach (var control in _controls)
-            {
-                Children.Add(control);
-            }
+            Children.Clear();
+            return;
         }
         else
         {
-            var index = startIndex;
-            for (var i = 0; i < visibleCount; i++)
+            if (_controls.Count == 0)
             {
-                var control = _controls[i];
-                if (index >= Items.Count)
+                var index = startIndex;
+                for (var i = 0; i < visibleCount; i++)
                 {
-                    control.IsVisible = false;
-                    continue;
+                    var param = Items[index];
+                    var control = ItemTemplate?.Build(param);
+                    control.DataContext = param;
+                    _controls.Add(control);
+                    _indexes.Add(index);
+                    index++;
                 }
-                else
+
+                foreach (var control in _controls)
                 {
+                    Children.Add(control);
+                }
+            }
+            else
+            {
+                var index = startIndex;
+                for (var i = 0; i < visibleCount; i++)
+                {
+                    var control = _controls[i];
+                    if (index >= Items.Count)
+                    {
+                        control.IsVisible = false;
+                        continue;
+                    }
+
                     if (!control.IsVisible)
                     {
                         control.IsVisible = true;
                     }
-                }
 
-                var param = Items[index];
-                control.DataContext = param;
-                _indexes[i] = index;
-                index++;
-            }  
+                    var param = Items[index];
+                    control.DataContext = param;
+                    _indexes[i] = index;
+                    index++;
+                }  
+            }
         }
 
         _childIndexChanged?.Invoke(this, new ChildIndexChangedEventArgs());
@@ -277,11 +288,11 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             {
                 var size = new Size(_viewport.Width, ItemHeight);
                 control.Measure(size);
-                //Debug.WriteLine($"Measure: {size}");
+                // Debug.WriteLine($"Measure: {size}");
             }
         }
 
-        //return base.MeasureOverride(availableSize);
+        // return base.MeasureOverride(availableSize);
         return availableSize;
     }
 
@@ -305,7 +316,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             }
         }
 
-        //return base.ArrangeOverride(finalSize);
+        // return base.ArrangeOverride(finalSize);
         return finalSize;
     }
 
