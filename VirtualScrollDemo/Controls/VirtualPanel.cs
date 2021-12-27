@@ -228,25 +228,28 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             if (_controls.Count < visibleCount)
             {
                 var index = startIndex + _controls.Count;
-                for (var i = _controls.Count; i < visibleCount; i++)
+                if (index < Items.Count)
                 {
-                    var param = Items[index];
-                    var control = ItemTemplate.Build(param);
-                    _controls.Add(control);
-                    _indexes.Add(-1);
-                    Children.Add(control);
-                    Debug.WriteLine($"[Materialize.Create] index: {index}, param: {param}");
-                    index++;
+                    for (var i = _controls.Count; i < visibleCount; i++)
+                    {
+                        var param = Items[index];
+                        var control = ItemTemplate.Build(param);
+                        _controls.Add(control);
+                        _indexes.Add(-1);
+                        Children.Add(control);
+                        Debug.WriteLine($"[Materialize.Create] index: {index}, param: {param}");
+                        index++;
+                    }
                 }
             }
         }
 
         {
             var index = startIndex;
-            for (var i = 0; i < visibleCount; i++)
+            for (var i = 0; i < _controls.Count; i++)
             {
                 var control = _controls[i];
-                if (index >= Items.Count)
+                if (index >= Items.Count || i > visibleCount)
                 {
                     if (control.IsVisible)
                     {
