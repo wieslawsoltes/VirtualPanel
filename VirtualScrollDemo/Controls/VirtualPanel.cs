@@ -234,7 +234,10 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                     for (var i = _controls.Count; i < visibleCount; i++)
                     {
                         var param = Items[index];
-                        var control = ItemTemplate.Build(param);
+                        var control = new ContentControl
+                        {
+                            Content = ItemTemplate.Build(param)
+                        };
                         _controls.Add(control);
                         _indexes.Add(-1);
                         Children.Add(control);

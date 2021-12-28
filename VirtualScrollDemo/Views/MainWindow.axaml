@@ -22,28 +22,30 @@
     </DockPanel>
 
     <ScrollViewer Name="ScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+      <ScrollViewer.Styles>
+        <Style Selector="c|VirtualPanel > ContentControl">
+          <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="c|VirtualPanel > ContentControl:nth-child(2n)">
+          <Setter Property="Background" Value="#fff8f8f8"/>
+        </Style>
+        <Style Selector="c|VirtualPanel > ContentControl:pointerover">
+          <Setter Property="Background" Value="#ffe4e4e4"/>
+        </Style>
+      </ScrollViewer.Styles>
+
       <c:VirtualPanel Items="{Binding Items}"
                       ItemHeight="{Binding ItemHeight}">
         <c:VirtualPanel.ItemTemplate>
           <DataTemplate x:DataType="x:String">
-            <Panel>
-              <Panel.Styles>
-                <Style Selector="Panel">
-                  <Setter Property="Background" Value="Transparent"/>
-                </Style>
-                <Style Selector="Panel:nth-child(2n)">
-                  <Setter Property="Background" Value="#fff8f8f8"/>
-                </Style>
-                <Style Selector="Panel:pointerover">
-                  <Setter Property="Background" Value="#ffe4e4e4"/>
-                </Style>
-              </Panel.Styles>
-              <TextBlock Text="{Binding}" Margin="6,0,6,0" VerticalAlignment="Center" />
-            </Panel>
+            <TextBlock Text="{Binding}" Margin="6,0,6,0" VerticalAlignment="Center" />
           </DataTemplate>
         </c:VirtualPanel.ItemTemplate>
       </c:VirtualPanel>
+
     </ScrollViewer>
+
   </DockPanel>
 
 </Window>
