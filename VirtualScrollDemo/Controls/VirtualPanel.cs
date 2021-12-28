@@ -205,6 +205,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         var endIndex = startIndex + visibleCount - 2;
 
         topOffset = offset.Y % itemHeight;
+        // topOffset = 0.0;
 
         /*
         Debug.WriteLine($"[Materialize] viewport: {viewport}" +
