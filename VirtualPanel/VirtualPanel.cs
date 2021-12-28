@@ -175,6 +175,22 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     #endregion
 
+    #region Events
+
+    protected virtual void OnContainerMaterialized(IControl container)
+    {
+    }
+
+    protected virtual void OnContainerDematerialized(IControl container)
+    {
+    }
+
+    protected virtual void OnContainerRecycled(IControl container)
+    {
+    }
+
+    #endregion
+    
     #region Layout
 
     private int _startIndex = -1;
@@ -198,18 +214,6 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         _pageScrollSize = new Size(_viewport.Width, _viewport.Height);
 
         return size;
-    }
-
-    protected virtual void OnContainerMaterialized(IControl container)
-    {
-    }
-
-    protected virtual void OnContainerDematerialized(IControl container)
-    {
-    }
-
-    protected virtual void OnContainerRecycled(IControl container)
-    {
     }
 
     private void Materialize(Size viewport, Vector offset, out double topOffset)
