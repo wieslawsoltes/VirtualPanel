@@ -14,6 +14,24 @@ namespace VirtualPanel;
 
 public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 {
+    private int GetItemsCount(IEnumerable? items)
+    {
+        if (items is null)
+        {
+            return 0;
+        }
+
+        if (items is IList list)
+        {
+            return list.Count;
+        }
+        else
+        {
+            // TODO: Support other IEnumerable types.
+            return 0;
+        }
+    }
+    
     #region ILogicalScrollable
 
     private Size _extent;
@@ -113,14 +131,8 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     bool IChildIndexProvider.TryGetTotalCount(out int count)
     {
-        if (Items is { })
-        {
-            count = Items.Count;
-            return true;
-        }
-
-        count = -1;
-        return false;
+        count = GetItemsCount(Items);
+        return true;
     }
 
     event EventHandler<ChildIndexChangedEventArgs>? IChildIndexProvider.ChildIndexChanged
@@ -133,8 +145,8 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     #region Properties
                 
-    public static readonly StyledProperty<IList?> ItemsProperty = 
-        AvaloniaProperty.Register<VirtualPanel, IList?>(nameof(Items));
+    public static readonly StyledProperty<IEnumerable?> ItemsProperty = 
+        AvaloniaProperty.Register<VirtualPanel, IEnumerable?>(nameof(Items));
 
     public static readonly StyledProperty<double> ItemHeightProperty = 
         AvaloniaProperty.Register<VirtualPanel, double>(nameof(ItemHeight), double.NaN);
@@ -142,7 +154,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     public static readonly StyledProperty<IDataTemplate?> ItemTemplateProperty = 
         AvaloniaProperty.Register<VirtualPanel, IDataTemplate?>(nameof(ItemTemplate));
 
-    public IList? Items
+    public IEnumerable? Items
     {
         get => GetValue(ItemsProperty);
         set => SetValue(ItemsProperty, value);
@@ -174,7 +186,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     {
         _viewport = size;
 
-        var itemCount = Items?.Count ?? 0;
+        var itemCount = GetItemsCount(Items);
         var itemHeight = ItemHeight;
         var height = itemCount * itemHeight;
 
@@ -190,7 +202,14 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 
     private void Materialize(Size viewport, Vector offset, out double topOffset)
     {
-        var itemCount = Items?.Count ?? 0;
+        // TODO: Support other IEnumerable types.
+        if (Items is not IList list)
+        {
+            topOffset = 0;
+            return;
+        }
+
+        var itemCount = GetItemsCount(list);
         var itemHeight = ItemHeight;
 
         _startIndex = (int)(offset.Y / itemHeight);
@@ -212,7 +231,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                         $", topOffset: {-topOffset}");
         //*/
 
-        if (Items is null || Items.Count == 0 || ItemTemplate is null)
+        if (itemCount == 0 || ItemTemplate is null)
         {
             Children.Clear();
             _childIndexChanged?.Invoke(this, new ChildIndexChangedEventArgs());
@@ -223,11 +242,11 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             if (_controls.Count < _visibleCount)
             {
                 var index = _startIndex + _controls.Count;
-                if (index < Items.Count)
+                if (index < itemCount)
                 {
                     for (var i = _controls.Count; i < _visibleCount; i++)
                     {
-                        var param = Items[index];
+                        var param = list[index];
                         var control = new ContentControl
                         {
                             Content = ItemTemplate.Build(param)
@@ -247,7 +266,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             for (var i = 0; i < _controls.Count; i++)
             {
                 var control = _controls[i];
-                if (index >= Items.Count || i > _visibleCount)
+                if (index >= itemCount || i > _visibleCount)
                 {
                     if (control.IsVisible)
                     {
@@ -263,7 +282,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                     Debug.WriteLine($"[Materialize.Show] index: {index}");
                 }
 
-                var param = Items[index];
+                var param = list[index];
                 control.DataContext = param;
                 // Debug.WriteLine($"[Materialize.Update] index: {index}, param: {param}");
                 _indexes[i] = index;
