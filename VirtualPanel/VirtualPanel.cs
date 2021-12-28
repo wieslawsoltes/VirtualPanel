@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -11,20 +10,20 @@ using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Metadata;
 
-namespace VirtualScrollDemo.Controls;
+namespace VirtualPanel;
 
 public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 {
     #region ILogicalScrollable
 
-    private Size _extent = new Size();
-    private Vector _offset = new Vector();
-    private Size _viewport = new Size();
-    private bool _canHorizontallyScroll = false;
-    private bool _canVerticallyScroll = false;
+    private Size _extent;
+    private Vector _offset;
+    private Size _viewport;
+    private bool _canHorizontallyScroll;
+    private bool _canVerticallyScroll;
     private bool _isLogicalScrollEnabled = true;
-    private Size _scrollSize = new Size(1, 1);
-    private Size _pageScrollSize = new Size(10, 10);
+    private Size _scrollSize = new(1, 1);
+    private Size _pageScrollSize = new(10, 10);
     private EventHandler? _scrollInvalidated;
 
     Size IScrollable.Extent => _extent;
@@ -36,7 +35,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         {
             _offset = value;
             CalculateSize(Bounds.Size);
-            Materialize(_viewport, _extent, _offset, out _);
+            Materialize(_viewport, _offset, out _);
             InvalidateScrollable();
             InvalidateMeasure();
         }
@@ -167,9 +166,9 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     #region Layout
 
     private int _startIndex = -1;
-    private int _endIndex = -1;
-    private List<IControl> _controls = new List<IControl>();
-    private List<int> _indexes = new List<int>();
+    private int _visibleCount = -1;
+    private List<IControl> _controls = new();
+    private List<int> _indexes = new();
 
     private Size CalculateSize(Size size)
     {
@@ -189,33 +188,28 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         return size;
     }
 
-    private void Materialize(Size viewport, Size extent, Vector offset, out double topOffset, [CallerMemberName] string name = default)
+    private void Materialize(Size viewport, Vector offset, out double topOffset)
     {
         var itemCount = Items?.Count ?? 0;
         var itemHeight = ItemHeight;
 
-        var startIndex = (int)(offset.Y / itemHeight);
-        var visibleCount = (int)(viewport.Height / itemHeight);
+        _startIndex = (int)(offset.Y / itemHeight);
+        _visibleCount = (int)(viewport.Height / itemHeight);
 
-        if (visibleCount < itemCount)
+        if (_visibleCount < itemCount)
         {
-            visibleCount += 1;
+            _visibleCount += 1;
         }
-
-        var endIndex = startIndex + visibleCount - 2;
 
         topOffset = offset.Y % itemHeight;
         // topOffset = 0.0;
 
         /*
         Debug.WriteLine($"[Materialize] viewport: {viewport}" +
-                        $", extent: {extent}" +
                         $", offset: {offset}" +
-                        $", startIndex: {startIndex}" +
-                        $", endIndex: {endIndex}" +
-                        $", visibleCount: {visibleCount}" +
-                        $", topOffset: {-topOffset}" +
-                        $", name: {name}");
+                        $", startIndex: {_startIndex}" +
+                        $", visibleCount: {_visibleCount}" +
+                        $", topOffset: {-topOffset}");
         //*/
 
         if (Items is null || Items.Count == 0 || ItemTemplate is null)
@@ -226,12 +220,12 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         }
 
         {
-            if (_controls.Count < visibleCount)
+            if (_controls.Count < _visibleCount)
             {
-                var index = startIndex + _controls.Count;
+                var index = _startIndex + _controls.Count;
                 if (index < Items.Count)
                 {
-                    for (var i = _controls.Count; i < visibleCount; i++)
+                    for (var i = _controls.Count; i < _visibleCount; i++)
                     {
                         var param = Items[index];
                         var control = new ContentControl
@@ -249,11 +243,11 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         }
 
         {
-            var index = startIndex;
+            var index = _startIndex;
             for (var i = 0; i < _controls.Count; i++)
             {
                 var control = _controls[i];
-                if (index >= Items.Count || i > visibleCount)
+                if (index >= Items.Count || i > _visibleCount)
                 {
                     if (control.IsVisible)
                     {
@@ -284,7 +278,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     {
         availableSize = CalculateSize(availableSize);
             
-        Materialize(_viewport, _extent, _offset, out _);
+        Materialize(_viewport, _offset, out _);
 
         if (_controls.Count > 0)
         {
@@ -304,7 +298,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     {
         finalSize = CalculateSize(finalSize);
 
-        Materialize(_viewport, _extent, _offset, out var topOffset);
+        Materialize(_viewport, _offset, out var topOffset);
 
         InvalidateScrollable();
 

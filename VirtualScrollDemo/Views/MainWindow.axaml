@@ -2,7 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:c="clr-namespace:VirtualScrollDemo.Controls"
         xmlns:views="clr-namespace:VirtualScrollDemo.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="635"
         x:Class="VirtualScrollDemo.Views.MainWindow"
@@ -24,25 +23,25 @@
     <ScrollViewer Name="ScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 
       <ScrollViewer.Styles>
-        <Style Selector="c|VirtualPanel > ContentControl">
+        <Style Selector="VirtualPanel > ContentControl">
           <Setter Property="Background" Value="Transparent"/>
         </Style>
-        <Style Selector="c|VirtualPanel > ContentControl:nth-child(2n)">
+        <Style Selector="VirtualPanel > ContentControl:nth-child(2n)">
           <Setter Property="Background" Value="#fff8f8f8"/>
         </Style>
-        <Style Selector="c|VirtualPanel > ContentControl:pointerover">
+        <Style Selector="VirtualPanel > ContentControl:pointerover">
           <Setter Property="Background" Value="#ffe4e4e4"/>
         </Style>
       </ScrollViewer.Styles>
 
-      <c:VirtualPanel Items="{Binding Items}"
-                      ItemHeight="{Binding ItemHeight}">
-        <c:VirtualPanel.ItemTemplate>
+      <VirtualPanel Items="{Binding Items}"
+                    ItemHeight="{Binding ItemHeight}">
+        <VirtualPanel.ItemTemplate>
           <DataTemplate x:DataType="x:String">
             <TextBlock Text="{Binding}" Margin="6,0,6,0" VerticalAlignment="Center" />
           </DataTemplate>
-        </c:VirtualPanel.ItemTemplate>
-      </c:VirtualPanel>
+        </VirtualPanel.ItemTemplate>
+      </VirtualPanel>
 
     </ScrollViewer>
 
