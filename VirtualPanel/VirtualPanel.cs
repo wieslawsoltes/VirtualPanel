@@ -236,6 +236,11 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             _visibleCount += 1;
         }
 
+        if (_visibleCount > itemCount)
+        {
+            _visibleCount = itemCount;
+        }
+
         topOffset = offset.Y % itemHeight;
         // topOffset = 0.0;
 
