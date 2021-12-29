@@ -308,7 +308,10 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                 }
 
                 var param = list[index];
-                control.DataContext = param;
+                if (control.DataContext != param)
+                {
+                    control.DataContext = param;
+                }
                 // Debug.WriteLine($"[Materialize.Update] index: {index}, param: {param}");
                 _indexes[i] = index;
                 index++;
