@@ -271,7 +271,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                         _controls.Add(control);
                         _indexes.Add(-1);
                         Children.Add(control);
-                        Debug.WriteLine($"[Materialize.Materialized] index: {index}, param: {param}");
+                        // Debug.WriteLine($"[Materialize.Materialized] index: {index}, param: {param}");
                         OnContainerMaterialized(control);
                         index++;
                     }
@@ -289,7 +289,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                     if (control.IsVisible)
                     {
                         control.IsVisible = false;
-                        Debug.WriteLine($"[Materialize.Dematerialized] index: {index}");
+                        // Debug.WriteLine($"[Materialize.Dematerialized] index: {index}");
                         OnContainerDematerialized(control);
                     }
                     continue;
@@ -298,7 +298,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                 if (!control.IsVisible)
                 {
                     control.IsVisible = true;
-                    Debug.WriteLine($"[Materialize.Recycled] index: {index}");
+                    // Debug.WriteLine($"[Materialize.Recycled] index: {index}");
                     OnContainerRecycled(control);
                 }
 
