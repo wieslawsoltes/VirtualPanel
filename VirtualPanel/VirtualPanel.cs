@@ -252,7 +252,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                         $", topOffset: {-topOffset}");
         //*/
 
-        if (itemCount == 0 || ItemTemplate is null)
+        if (itemCount == 0 || _visibleCount == 0 || ItemTemplate is null)
         {
             Children.Clear();
             _childIndexChanged?.Invoke(this, new ChildIndexChangedEventArgs());
