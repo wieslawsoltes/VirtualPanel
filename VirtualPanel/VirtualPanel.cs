@@ -268,11 +268,29 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
                     for (var i = _controls.Count; i < _visibleCount; i++)
                     {
                         var param = list[index];
-                        var content = ItemTemplate.Build(param);
+                        
+                        
+                        
+                        //*
+                        //var content = ItemTemplate.Build(param);
+                        var content = new Lazy { Load = LazyLoad.Normal, Unload = LazyUnload.Lazy, Factory = () => (Control)ItemTemplate.Build(param) };
                         var control = new ContentControl
                         {
                             Content = content
                         };
+                        //*/
+                        
+                        
+                        /*
+                        var content = ItemTemplate.Build(param);
+                        var control2 = new ContentControl
+                        {
+                            Content = content
+                        };
+                        var control = new Lazy { Load = LazyLoad.Lazy, Unload = LazyUnload.Lazy, Factory = () => control2 };
+                        //*/
+                        
+                        
                         _controls.Add(control);
                         _indexes.Add(-1);
                         Children.Add(control);
