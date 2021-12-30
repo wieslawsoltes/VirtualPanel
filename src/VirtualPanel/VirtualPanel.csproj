@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,11 +8,21 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
   <PropertyGroup>
     <VersionPrefix>0.10.11</VersionPrefix>
     <VersionSuffix>preview.0</VersionSuffix>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>virtualpanel.public.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.11" />
   </ItemGroup>
+
 </Project>
