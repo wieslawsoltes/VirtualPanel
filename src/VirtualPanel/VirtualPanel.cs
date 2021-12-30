@@ -14,6 +14,8 @@ namespace VirtualPanel;
 
 public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
 {
+    #region Util
+
     private int GetItemsCount(IEnumerable? items)
     {
         if (items is null)
@@ -31,7 +33,9 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
             return 0;
         }
     }
-    
+
+    #endregion
+
     #region ILogicalScrollable
 
     private Size _extent;
