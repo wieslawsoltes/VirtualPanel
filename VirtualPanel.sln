@@ -1,8 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualScrollDemo", "VirtualScrollDemo\VirtualScrollDemo.csproj", "{A1CC532E-A97C-45A1-86CA-68BFBBC8E973}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualPanelDemo", "samples\VirtualPanelDemo\VirtualPanelDemo.csproj", "{A1CC532E-A97C-45A1-86CA-68BFBBC8E973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualPanel", "VirtualPanel\VirtualPanel.csproj", "{F0DB8446-C1B8-4C9A-8BC9-B2FBAF442285}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualPanel", "src\VirtualPanel\VirtualPanel.csproj", "{F0DB8446-C1B8-4C9A-8BC9-B2FBAF442285}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A4A46ACB-0FFF-46B2-BA4A-A44D3CB506A7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8DC09DAD-F4D9-4346-BDC9-B8FE3A363415}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +22,9 @@ Global
 		{F0DB8446-C1B8-4C9A-8BC9-B2FBAF442285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0DB8446-C1B8-4C9A-8BC9-B2FBAF442285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0DB8446-C1B8-4C9A-8BC9-B2FBAF442285}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F0DB8446-C1B8-4C9A-8BC9-B2FBAF442285} = {A4A46ACB-0FFF-46B2-BA4A-A44D3CB506A7}
+		{A1CC532E-A97C-45A1-86CA-68BFBBC8E973} = {8DC09DAD-F4D9-4346-BDC9-B8FE3A363415}
 	EndGlobalSection
 EndGlobal

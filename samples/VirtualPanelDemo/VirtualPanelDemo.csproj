@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <AnalysisLevel>latest</AnalysisLevel>
     <LangVersion>latest</LangVersion>
+    <RootNamespace>VirtualScrollDemo</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.11" />
@@ -13,6 +14,6 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.11" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VirtualPanel\VirtualPanel.csproj" />
+    <ProjectReference Include="..\..\src\VirtualPanel\VirtualPanel.csproj" />
   </ItemGroup>
 </Project>
