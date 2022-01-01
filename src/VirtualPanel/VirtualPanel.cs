@@ -48,6 +48,15 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
     private Size _pageScrollSize = new(10, 10);
     private EventHandler? _scrollInvalidated;
 
+    private Vector CoerceOffset(Vector value)
+    {
+        var scrollable = (ILogicalScrollable)this;
+        var maxX = Math.Max(scrollable.Extent.Width - scrollable.Viewport.Width, 0);
+        var maxY = Math.Max(scrollable.Extent.Height - scrollable.Viewport.Height, 0);
+        return new Vector(Clamp(value.X, 0, maxX), Clamp(value.Y, 0, maxY));
+        static double Clamp(double val, double min, double max) => val < min ? min : val > max ? max : val;
+    }
+
     Size IScrollable.Extent => _extent;
 
     Vector IScrollable.Offset
@@ -55,7 +64,7 @@ public class VirtualPanel : Panel, ILogicalScrollable, IChildIndexProvider
         get => _offset;
         set
         {
-            _offset = value;
+            _offset = CoerceOffset(value);
             CalculateSize(Bounds.Size);
             Materialize(_viewport, _offset, out _);
             InvalidateScrollable();
